@@ -1,0 +1,27 @@
+{
+	"name": "NoTIP Angular Dev",
+
+	"image": "ghcr.io/notipswe/notip-angular-dev:v0.0.1",
+
+	"postCreateCommand": "[ -f package.json ] && npm install; pre-commit install --install-hooks",
+	"init": true,
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"firsttris.vscode-jest-runner",
+				"SonarSource.sonarlint-vscode",
+				"ms-azuretools.vscode-containers",
+				"Angular.ng-template"
+			]
+		}
+	},
+
+	"forwardPorts": [4200],
+
+	"workspaceFolder": "/workspaces/notip-simulator-frontend",
+	"updateRemoteUserUID": true,
+	"remoteUser": "node"
+}

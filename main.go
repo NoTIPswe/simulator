@@ -6,8 +6,11 @@ import (
 	"github.com/NoTIPswe/notip-simulator-cli/cmd"
 )
 
+var execute = cmd.Execute
+var osExit = os.Exit
+
 func main() {
-	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
+	if err := execute(); err != nil {
+		osExit(1)
 	}
 }

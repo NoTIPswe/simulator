@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/NoTIPswe/notip-simulator-cli/internal/client"
@@ -424,5 +425,53 @@ func TestInjectOutlier_SensorNotFound(t *testing.T) {
 	})
 	if err := c.InjectOutlier(0, nil); err == nil {
 		t.Fatal("expected error on 404, got nil")
+	}
+}
+
+func TestGetGateway_ErrorIncludesStatusAndBody(t *testing.T) {
+	_, c := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte("gateway id format is invalid"))
+	})
+
+	_, err := c.GetGateway("bad-id")
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if !strings.Contains(err.Error(), "backend returned 400") {
+		t.Fatalf("error should include status code, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "gateway id format is invalid") {
+		t.Fatalf("error should include backend body, got: %v", err)
+	}
+}
+
+func TestCreateGateway_InvalidJSONResponse(t *testing.T) {
+	_, c := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte("{invalid-json"))
+	})
+
+	_, err := c.CreateGateway(client.CreateGatewayRequest{
+		FactoryID:    "f-1",
+		FactoryKey:   "k-1",
+		SerialNumber: "SN-1",
+	})
+	if err == nil {
+		t.Fatal("expected decode error, got nil")
+	}
+}
+
+func TestListGateways_InvalidJSONResponse(t *testing.T) {
+	_, c := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("not-json"))
+	})
+
+	_, err := c.ListGateways()
+	if err == nil {
+		t.Fatal("expected decode error, got nil")
 	}
 }

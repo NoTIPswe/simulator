@@ -9,6 +9,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/NoTIPswe/notip-simulator-cli/internal/client"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -670,5 +671,15 @@ func TestStatusStyleVariants(t *testing.T) {
 	}
 	if got := statusStyle("unknown"); got != "unknown" {
 		t.Fatalf("unknown style = %q, want %q", got, "unknown")
+	}
+}
+
+func TestPrintSensorTable_EmptySlice_NoOutput(t *testing.T) {
+	out := captureStdout(t, func() {
+		printSensorTable([]client.Sensor{})
+	})
+
+	if out != "" {
+		t.Fatalf("expected no output for empty sensor table, got %q", out)
 	}
 }

@@ -14,6 +14,15 @@ var anomaliesCmd = &cobra.Command{
 	Short: "Trigger anomaly scenarios on gateways and sensors",
 }
 
+var exitProcess = os.Exit
+
+func mustMarkRequired(cmd *cobra.Command, flagName string) {
+	if err := cmd.MarkFlagRequired(flagName); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		exitProcess(1)
+	}
+}
+
 // ── disconnect ────────────────────────────────────────────────────────────────
 
 var anomaliesDisconnectCmd = &cobra.Command{
@@ -100,18 +109,12 @@ func init() {
 
 	// disconnect flags
 	anomaliesDisconnectCmd.Flags().Int("duration", 0, "Disconnect duration in seconds (required, must be > 0)")
-	if err := anomaliesDisconnectCmd.MarkFlagRequired("duration"); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	mustMarkRequired(anomaliesDisconnectCmd, "duration")
 
 	// network-degradation flags
 	anomaliesNetworkDegradationCmd.Flags().Int("duration", 0, "Duration in seconds (required)")
 	anomaliesNetworkDegradationCmd.Flags().Float64("packet-loss", 0, "Packet loss fraction 0–1 (e.g. 0.3 = 30%); omit to use backend default of 0.3")
-	if err := anomaliesNetworkDegradationCmd.MarkFlagRequired("duration"); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	mustMarkRequired(anomaliesNetworkDegradationCmd, "duration")
 
 	// outlier flags
 	anomaliesOutlierCmd.Flags().Float64("value", 0, "Outlier value to inject; omit to let the backend decide")

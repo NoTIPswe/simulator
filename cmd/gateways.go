@@ -41,7 +41,7 @@ var gatewaysListCmd = &cobra.Command{
 		}
 
 		tableData := pterm.TableData{
-			{"ID", "UUID", "Status", "Model", "Serial", "Freq (ms)", "Tenant"},
+			{"ID", "UUID", "Status", "Model", "Freq (ms)", "Tenant"},
 		}
 		for _, gw := range gateways {
 			tableData = append(tableData, []string{
@@ -49,7 +49,6 @@ var gatewaysListCmd = &cobra.Command{
 				gw.ManagementGatewayID,
 				statusStyle(gw.Status),
 				gw.Model,
-				gw.SerialNumber,
 				strconv.Itoa(gw.SendFrequencyMs),
 				gw.TenantID,
 			})
@@ -80,7 +79,6 @@ var gatewaysGetCmd = &cobra.Command{
 			{"ID", strconv.FormatInt(gw.ID, 10)},
 			{"UUID", gw.ManagementGatewayID},
 			{"Factory ID", gw.FactoryID},
-			{"Serial", gw.SerialNumber},
 			{"Model", gw.Model},
 			{"Firmware", gw.FirmwareVersion},
 			{"Status", statusStyle(gw.Status)},
@@ -235,14 +233,13 @@ func printGatewayTable(gateways []client.Gateway) {
 	if len(gateways) == 0 {
 		return
 	}
-	tableData := pterm.TableData{{"ID", "UUID", "Status", "Model", "Serial", "Freq (ms)"}}
+	tableData := pterm.TableData{{"ID", "UUID", "Status", "Model", "Freq (ms)"}}
 	for _, gw := range gateways {
 		tableData = append(tableData, []string{
 			strconv.FormatInt(gw.ID, 10),
 			gw.ManagementGatewayID,
 			statusStyle(gw.Status),
 			gw.Model,
-			gw.SerialNumber,
 			strconv.Itoa(gw.SendFrequencyMs),
 		})
 	}
